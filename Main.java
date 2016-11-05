@@ -45,7 +45,7 @@ public class Main extends AppCompatActivity {
     }
 
     public void test() {
-        Double newVal= 1.0;
+        Double newVal;
 
         // use to set manually numPoints=90;
 
