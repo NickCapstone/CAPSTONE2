@@ -1,20 +1,24 @@
 package ayy.capstone;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.os.SystemClock;
-import android.support.v7.app.AppCompatActivity;
+/*
+*
+*
+*
+ */
+
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.os.Handler;
+
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import ayy.capstone.AudioCapture;
 
 public class Main extends AppCompatActivity {
 
@@ -23,7 +27,12 @@ public class Main extends AppCompatActivity {
     GraphView graph;
     static int x = 0;
     static int numPoints = 10;
+    static boolean playing = false;
+    static int numClicks = 0;
     Handler updateGraph = new Handler();
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +42,8 @@ public class Main extends AppCompatActivity {
         typedMessage = (EditText) findViewById(R.id.edit_message);
         graph = (GraphView) findViewById(R.id.graph);
 
+
+
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
                 new DataPoint(0, 1),
                 new DataPoint(1, 5),
@@ -41,6 +52,7 @@ public class Main extends AppCompatActivity {
                 new DataPoint(4, 6)
         });
         graph.addSeries(series);
+
 
     }
 
@@ -86,7 +98,20 @@ public class Main extends AppCompatActivity {
 
     /** Called when the user clicks the Send button */
     public void alterMessage(View view) {
-        updateGraph.post(runnableCode);
+        //CALL THIS TO RUN THE SIN GRAPH
+        //updateGraph.post(runnableCode);
+        numClicks++;
+        switch(numClicks){
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                numClicks = 0;
+                break;
+        }
+
+
     }
     private Runnable runnableCode = new Runnable() {
         @Override
