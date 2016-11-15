@@ -6,5 +6,7 @@ package ayy.capstone;
 
 public class Signal_Processing {
 
-
+    public void temp(){
+        System.out.println("update");
+    }
 }

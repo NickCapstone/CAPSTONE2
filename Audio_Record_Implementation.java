@@ -2,6 +2,9 @@ package ayy.capstone;
 
 /**
  * Created by Nick on 2016-11-14.
+ *
+ * Retrieves data from microphone and sends to AudioDataManager for handling
+ *
  */
 
 import java.io.FileNotFoundException;
@@ -17,10 +20,10 @@ import android.media.AudioManager;
 import android.media.MediaFormat;
 import android.os.Environment;
 import android.support.annotation.RequiresApi;
-
+import ayy.capstone.Audio_Data_Manager;
 
 public class Audio_Record_Implementation {
-    private static int N = 0;
+    private static int number_of_intervals = 0;
     private static final int audio_sample_rate = 44100;
     private static final int audio_source = MediaRecorder.AudioSource.MIC;
     private static final int audio_channel = AudioFormat.CHANNEL_IN_MONO;
@@ -34,15 +37,17 @@ public class Audio_Record_Implementation {
                                     time per sample = #samples/buffer / (audio_sample_rate)
      */
 
-
     private AudioRecord audio_record;
+    private Audio_Data_Manager audio_data;
 
     private Thread saveAudioDataThread = null;
 
-    public void startRecording(int numberOfWindows){
+    public void startRecording(int numberOfIntervals){
 
-        if(numberOfWindows<1){
-            numberOfWindows = 1;
+        if(numberOfIntervals<1){
+            number_of_intervals = 1;
+        }else{
+            number_of_intervals = numberOfIntervals;
         }
 
         shouldRecord = true;
@@ -63,6 +68,7 @@ public class Audio_Record_Implementation {
                 int count = 0;
                 short copiedData[];
                 int sizeOfShortArray;
+                boolean dataIsReadyForDSP = false;
 
                 if (audio_buffer_size == AudioRecord.ERROR || audio_buffer_size == AudioRecord.ERROR_BAD_VALUE){
                     audio_buffer_size = 2* audio_sample_rate;
@@ -70,6 +76,7 @@ public class Audio_Record_Implementation {
 
                 sizeOfShortArray = audio_buffer_size/2;
                 copiedData =new short[sizeOfShortArray];
+                audio_data = new Audio_Data_Manager(number_of_intervals,sizeOfShortArray);
 
                 audio_record = new AudioRecord(
                         audio_source,
@@ -83,10 +90,10 @@ public class Audio_Record_Implementation {
 
                 while(shouldRecord){
                     audio_record.read(copiedData,0,copiedData.length);
-
-                    // CAN BE USED TO VISUALIZE AND VALIDATE CHANGING VALUES. SEEMS TO WORK. LOUDER = HIGHER #S RECORDED.
-                    //I THINK EACH SHORT IN THE copiedData ARRAY IS ONE SAMPLE'S VALUE. PLOT MAYBE??
-                    System.out.println(Short.toString(copiedData[1]));
+                    dataIsReadyForDSP = audio_data.add(copiedData);
+                    if(dataIsReadyForDSP){
+                        signalDSP();
+                    }
                 }
                 audio_record.stop();
                 audio_record.release();
@@ -96,6 +103,13 @@ public class Audio_Record_Implementation {
         );
 
         saveAudioDataThread.start();
+    }
+
+    private void signalDSP(){
+        System.out.println("tick");
+        //TODO send datamanager data to DSP
+        /*TODO IN DSP FOR NOW JUST GRAPH IN DSP AND UPDATE WHENEVER THE SIGNAL IS RECIEVED. NEED TO PROVE THAT IT ACTUALLY WORKS
+        */
     }
 
 
