@@ -18,8 +18,6 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import ayy.capstone.AudioCapture;
-
 public class Main extends AppCompatActivity {
 
     TextView modifiedMessage;
@@ -30,7 +28,7 @@ public class Main extends AppCompatActivity {
     static boolean playing = false;
     static int numClicks = 0;
     Handler updateGraph = new Handler();
-
+    Audio_Record_Implementation recorder = new Audio_Record_Implementation();
 
 
 
@@ -53,6 +51,7 @@ public class Main extends AppCompatActivity {
         });
         graph.addSeries(series);
 
+       recorder.startRecording(5);
 
     }
 
@@ -98,20 +97,7 @@ public class Main extends AppCompatActivity {
 
     /** Called when the user clicks the Send button */
     public void alterMessage(View view) {
-        //CALL THIS TO RUN THE SIN GRAPH
-        //updateGraph.post(runnableCode);
-        numClicks++;
-        switch(numClicks){
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                numClicks = 0;
-                break;
-        }
-
-
+        recorder.stopRecording();
     }
     private Runnable runnableCode = new Runnable() {
         @Override
