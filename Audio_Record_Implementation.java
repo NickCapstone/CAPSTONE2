@@ -42,24 +42,28 @@ public class Audio_Record_Implementation {
 
     private Thread saveAudioDataThread = null;
 
-    public void startRecording(int numberOfIntervals){
-
-        if(numberOfIntervals<1){
+    public void startRecording(int numberOfIntervalsToSave){
+        if(numberOfIntervalsToSave<1){
             number_of_intervals = 1;
         }else{
-            number_of_intervals = numberOfIntervals;
+            number_of_intervals = numberOfIntervalsToSave;
         }
 
         shouldRecord = true;
         record();
     }
 
+    public Audio_Data_Manager getNewData(){
+        return audio_data;
+    }
+
+
+
     public void stopRecording(){
         shouldRecord = false;
     }
 
     private void record(){
-
         //Start a seperate thread to save audio data
         saveAudioDataThread = new Thread(new Runnable(){
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -68,7 +72,6 @@ public class Audio_Record_Implementation {
                 int count = 0;
                 short copiedData[];
                 int sizeOfShortArray;
-                boolean dataIsReadyForDSP = false;
 
                 if (audio_buffer_size == AudioRecord.ERROR || audio_buffer_size == AudioRecord.ERROR_BAD_VALUE){
                     audio_buffer_size = 2* audio_sample_rate;
@@ -90,10 +93,7 @@ public class Audio_Record_Implementation {
 
                 while(shouldRecord){
                     audio_record.read(copiedData,0,copiedData.length);
-                    dataIsReadyForDSP = audio_data.add(copiedData);
-                    if(dataIsReadyForDSP){
-                        signalDSP();
-                    }
+                    audio_data.add(copiedData);
                 }
                 audio_record.stop();
                 audio_record.release();
@@ -105,12 +105,7 @@ public class Audio_Record_Implementation {
         saveAudioDataThread.start();
     }
 
-    private void signalDSP(){
-        System.out.println("tick");
-        //TODO send datamanager data to DSP
-        /*TODO IN DSP FOR NOW JUST GRAPH IN DSP AND UPDATE WHENEVER THE SIGNAL IS RECIEVED. NEED TO PROVE THAT IT ACTUALLY WORKS
-        */
-    }
+
 
 
 

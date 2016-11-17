@@ -24,19 +24,31 @@ public class Audio_Data_Manager {
         p_all_data = new short[p_number_of_intervals][p_points_per_interval];
     }
 
-    public boolean add(short[] dataIn){
+    public void add(short[] dataIn){
         p_all_data[p_current_interval] = dataIn;
         p_current_interval ++;
         //once we reach p_number_of_intervals-1, we have stored p_number_of_intervals. Signal update.
         if(p_current_interval>=(p_number_of_intervals-1)){
             p_current_interval= 0;
-            return true;
             //Dont do anything to the contents of p_all_data. It will all be overwritten before the next group is sent.
         }else{
-            return false;
         }
 
 
+    }
+
+
+    public float[] getMostRecentAsFloat(){
+        return makeFloat(p_all_data[p_current_interval]);
+
+    }
+
+    private float[] makeFloat(short[] data) {
+        float[] returnedArray = new float[data.length];
+        for (int i = 0; i < returnedArray.length; i++) {
+            returnedArray[i] = data[i];
+        }
+        return returnedArray;
     }
 
 
