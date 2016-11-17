@@ -13,18 +13,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import ayy.capstone.Draw_Graph;
 
-public class Main extends AppCompatActivity {
+public class Main extends AppCompatActivity{
 
     Audio_Record_Implementation recorder = new Audio_Record_Implementation();
-
+    Draw_Graph graphDrawer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recorder.startRecording(5);
+        graphDrawer = new Draw_Graph(this);
+        setContentView(graphDrawer);
+        //recorder.startRecording(5);
 
     }
 
@@ -35,4 +38,7 @@ public class Main extends AppCompatActivity {
     public void alterMessage(View view) {
         recorder.stopRecording();
     }
+
+
+
 }
