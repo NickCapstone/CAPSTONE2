@@ -84,23 +84,34 @@ public class Draw_Graph extends View {
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
-    public void changePath(float[] points){
-        float maxY = maxYInDataset(points);
+    //calculates new points on grap, sets them and updates graph. Takes a set of points, and a boolean
+    //indicating whether it should use fixed y-axis bounds or relative bounds. (i.e -5000 to 5000, or from
+    // -maxY to +maxY calculated  from incoming points. Requires limits, enter limits if using fixed
+    //or any arbitrary int if not.
+
+    public void updateGraph(float[] points, boolean useFixedBounds){
+        float maxY;
         boolean firstPoint = true;
-        path.reset();
-        path.moveTo(0,0);
         int numPoints = points.length;
         int xPointsArray[] = new int[numPoints];
         int yPointsArray[] = new int[numPoints];
 
+        if(useFixedBounds){
+            //For some reason max seems to be slightly above 2^14 = 16384
+            maxY = 16384;
+        }else{
+            maxY = maxYInDataset(points);
+        }
+
+        path.reset();
+        path.moveTo(0,0);
 
         for(int i=0;i<numPoints;i++){
             if(firstPoint){
-                path.moveTo(normalizeX(i,numPoints),normalizeY(points[i],2000));
+                path.moveTo(normalizeX(i,numPoints),normalizeY(points[i],maxY));
                 firstPoint = false;
             }else {
-                path.lineTo(normalizeX(i,numPoints),normalizeY(points[i],2000));
-                System.out.println(normalizeY(points[i],2000));
+                path.lineTo(normalizeX(i,numPoints),normalizeY(points[i],maxY));
             }
         }
 
@@ -123,7 +134,7 @@ public class Draw_Graph extends View {
         int midPoint = this.hGraph/2;
         int availableAmplitudeSpace = this.hGraph/2;
         float portionOfMaxY = 0;
-        portionOfMaxY = Math.abs((float) y)/maxY;
+        portionOfMaxY = Math.abs((float) y)/(2*maxY);
 
         if(y>0){
             //y>=, we want to go "up" on the page, i.e subtract portion of "amplitude space(h/2) from the midpoint.
