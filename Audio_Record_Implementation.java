@@ -57,8 +57,6 @@ public class Audio_Record_Implementation {
         return audio_data;
     }
 
-
-
     public void stopRecording(){
         shouldRecord = false;
     }
@@ -105,9 +103,7 @@ public class Audio_Record_Implementation {
         saveAudioDataThread.start();
     }
 
-
-
-
-
-
+    public int getSampleRate(){
+        return audio_sample_rate;
+    }
 }

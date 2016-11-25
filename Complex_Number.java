@@ -33,12 +33,12 @@ public class Complex_Number {
 
     public Complex_Number add(Complex_Number input){
         //Simply (a+bi)+(c+di) = (a+c)+i(b+d)
-        return new Complex_Number((this.re()+input.re()),(this.im()+input.im()));
+        return new Complex_Number((pRe+input.re()),(pIm+input.im()));
     }
 
     public Complex_Number sub(Complex_Number input){
         //same as add but subtract.
-        return new Complex_Number((this.re()-input.re()),(this.im()-input.im()));
+        return new Complex_Number((pRe-input.re()),(pIm-input.im()));
     }
 
     public Complex_Number mult(Complex_Number input){
@@ -51,25 +51,14 @@ public class Complex_Number {
         double retRe = 0;
         double retIm = 0;
 
-        retRe = this.re()*input.re() - this.im()*input.im();
-        retIm = this.im()*input.re() + this.re()*input.im();
+        retRe = pRe*input.re() - pIm*input.im();
+        retIm = pIm*input.re() + pRe*input.im();
 
         return new Complex_Number(retRe,retIm);
     }
 
-    public void setRe(double re){
-        pRe = re;
+    public Complex_Number scale(int k){
+        return new Complex_Number(pRe/k,pIm/k);
     }
-
-    public void setIm(double im){
-        pIm = im;
-    }
-
-    public void set(double re, double im){
-        pRe = re;
-        pIm = im;
-    }
-
-
 
 }

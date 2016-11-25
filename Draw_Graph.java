@@ -89,8 +89,8 @@ public class Draw_Graph extends View {
     // -maxY to +maxY calculated  from incoming points. Requires limits, enter limits if using fixed
     //or any arbitrary int if not.
 
-    public void updateGraph(float[] points, boolean useFixedBounds){
-        float maxY;
+    public void updateGraph(double[] points, boolean useFixedBounds,boolean isTimeDomain){
+        double  maxY;
         boolean firstPoint = true;
         int numPoints = points.length;
         int xPointsArray[] = new int[numPoints];
@@ -98,7 +98,11 @@ public class Draw_Graph extends View {
 
         if(useFixedBounds){
             //For some reason max seems to be slightly above 2^14 = 16384
-            maxY = 16384;
+            if(isTimeDomain) {
+                maxY = 16384;
+            }else{
+                maxY = 500;
+            }
         }else{
             maxY = maxYInDataset(points);
         }
@@ -108,10 +112,10 @@ public class Draw_Graph extends View {
 
         for(int i=0;i<numPoints;i++){
             if(firstPoint){
-                path.moveTo(normalizeX(i,numPoints),normalizeY(points[i],maxY));
+                path.moveTo((float)normalizeX(i,numPoints),(float)normalizeY(points[i],maxY));
                 firstPoint = false;
             }else {
-                path.lineTo(normalizeX(i,numPoints),normalizeY(points[i],maxY));
+                path.lineTo((float)normalizeX(i,numPoints),(float)normalizeY(points[i],maxY));
             }
         }
 
@@ -120,21 +124,21 @@ public class Draw_Graph extends View {
     }
 
     //normalize the X values, given the number of points and knowing the total width.
-    public float normalizeX(int x,int numPoints){
-        float portionOfTotal = 0;
-        portionOfTotal = (float) x / (float) numPoints;
+    public double normalizeX(int x,int numPoints){
+        double portionOfTotal = 0;
+        portionOfTotal = (double) x / (double) numPoints;
         return portionOfTotal * this.wGraph;
     }
 
 
 
     //calculates the value of Y based on its value, the range of Y values, and the total height.
-    public float normalizeY(float y, float maxY){
-        float returnVal;
+    public double normalizeY(double y, double maxY){
+        double returnVal;
         int midPoint = this.hGraph/2;
         int availableAmplitudeSpace = this.hGraph/2;
-        float portionOfMaxY = 0;
-        portionOfMaxY = Math.abs((float) y)/(2*maxY);
+        double portionOfMaxY = 0;
+        portionOfMaxY = Math.abs((double) y)/(2*maxY);
 
         if(y>0){
             //y>=, we want to go "up" on the page, i.e subtract portion of "amplitude space(h/2) from the midpoint.
@@ -151,8 +155,8 @@ public class Draw_Graph extends View {
     }
 
     //find the maximum value of y in the given dataset
-    public float maxYInDataset(float[] points){
-        float maxY = 0;
+    public double maxYInDataset(double[] points){
+        double maxY = 0;
         for(int i=0;i<points.length;i++){
             if( Math.abs(points[i])>maxY){
                 maxY = Math.abs(points[i]);

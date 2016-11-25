@@ -38,13 +38,13 @@ public class Audio_Data_Manager {
     }
 
 
-    public float[] getMostRecentAsFloat(){
-        return makeFloat(p_all_data[p_current_interval]);
+    public double[] getMostRecentAsDouble(){
+        return makeDouble(p_all_data[p_current_interval]);
 
     }
 
-    private float[] makeFloat(short[] data) {
-        float[] returnedArray = new float[data.length];
+    private double[] makeDouble(short[] data) {
+        double[] returnedArray = new double[data.length];
         for (int i = 0; i < returnedArray.length; i++) {
             returnedArray[i] = data[i];
         }
