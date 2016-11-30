@@ -65,7 +65,7 @@ public class Main extends AppCompatActivity{
                     }
                 }
                 System.out.println(maxVal);
-                graphingCanvas.updateGraph(test[1],true,false);
+                graphingCanvas.updateGraph(test[1],false,false);
                 /*
                 TEST OUTPUT VALUES
                 for(int i=0;i<data.length;i++){
