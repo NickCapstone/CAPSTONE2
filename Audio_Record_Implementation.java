@@ -7,29 +7,20 @@ package ayy.capstone;
  *
  */
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.os.Bundle;
-import android.media.AudioManager;
-import android.media.MediaFormat;
-import android.os.Environment;
 import android.support.annotation.RequiresApi;
-import ayy.capstone.Audio_Data_Manager;
 
 public class Audio_Record_Implementation {
-    private static int number_of_intervals = 0;
     private static final int audio_sample_rate = 44100;
     private static final int audio_source = MediaRecorder.AudioSource.MIC;
     private static final int audio_channel = AudioFormat.CHANNEL_IN_MONO;
     private static final int audio_encoding = AudioFormat.ENCODING_PCM_16BIT;
     private static int audio_buffer_size = AudioRecord.getMinBufferSize(audio_sample_rate,audio_channel,audio_encoding);
     private static boolean shouldRecord = false;
+    private double[] accessible_audio_data;
 
     /*
         Using 16-bit encoding, so   audio_buffer_size/2 = #samples/Buffer
@@ -38,24 +29,26 @@ public class Audio_Record_Implementation {
      */
 
     private AudioRecord audio_record;
-    private Audio_Data_Manager audio_data;
 
     private Thread saveAudioDataThread = null;
 
-    public void startRecording(int numberOfIntervalsToSave){
-        if(numberOfIntervalsToSave<1){
-            number_of_intervals = 1;
+    public void startRecording(int buffSize){
+        if(buffSize<=1){
+            //Do nothing to audio buffer size. Leave it as 1*buffer size
         }else{
-            number_of_intervals = numberOfIntervalsToSave;
+            audio_buffer_size = buffSize;
         }
 
         shouldRecord = true;
         record();
     }
 
-    public Audio_Data_Manager getNewData(){
-        return audio_data;
+
+    public double[] getAudioDataAsDouble(){
+        return accessible_audio_data;
     }
+
+
 
     public void stopRecording(){
         shouldRecord = false;
@@ -68,7 +61,6 @@ public class Audio_Record_Implementation {
             public void run(){
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
                 int count = 0;
-                short copiedData[];
                 int sizeOfShortArray;
 
                 if (audio_buffer_size == AudioRecord.ERROR || audio_buffer_size == AudioRecord.ERROR_BAD_VALUE){
@@ -76,8 +68,8 @@ public class Audio_Record_Implementation {
                 }
 
                 sizeOfShortArray = audio_buffer_size/2;
-                copiedData =new short[sizeOfShortArray];
-                audio_data = new Audio_Data_Manager(number_of_intervals,sizeOfShortArray);
+
+                short[] internal_audio_data = new short[sizeOfShortArray];
 
                 audio_record = new AudioRecord(
                         audio_source,
@@ -90,9 +82,10 @@ public class Audio_Record_Implementation {
                 audio_record.startRecording();
 
                 while(shouldRecord){
-                    audio_record.read(copiedData,0,copiedData.length);
-                    audio_data.add(copiedData);
+                    audio_record.read(internal_audio_data,0,internal_audio_data.length);
+                    accessible_audio_data = makeDouble(internal_audio_data);
                 }
+
                 audio_record.stop();
                 audio_record.release();
             }
@@ -103,7 +96,21 @@ public class Audio_Record_Implementation {
         saveAudioDataThread.start();
     }
 
+    private double[] makeDouble(short[] data) {
+        double[] returnedArray = new double[data.length];
+        for (int i = 0; i < returnedArray.length; i++) {
+            returnedArray[i] = data[i];
+        }
+        return returnedArray;
+    }
+
     public int getSampleRate(){
         return audio_sample_rate;
     }
+
+    public int getAudio_buffer_size(){
+        return audio_buffer_size;
+    }
+
+
 }

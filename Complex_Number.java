@@ -6,7 +6,7 @@ package ayy.capstone;
 
 import java.lang.Math;
 
-public class Complex_Number {
+final public class Complex_Number {
     private double pRe;
     private double pIm;
 
@@ -24,7 +24,7 @@ public class Complex_Number {
     }
 
     public double magnitude(){
-        return Math.sqrt(pRe*pRe + pIm*pIm);
+        return Math.sqrt(Math.abs(pRe*pRe) + Math.abs(pIm*pIm));
     }
 
     public double phase() {
@@ -43,8 +43,8 @@ public class Complex_Number {
 
     public Complex_Number mult(Complex_Number input){
         /*
-            Multiply complex numbers by using FOIL.
-            eg.  (a+ib)*(c+di)
+            Multiply complex numbers using FOIL.
+            eg.  (a+bi)*(c+di)
                 =ac + adi + bci + bdii
                 =(ac-bd)+i(bc+ad)
          */
@@ -60,5 +60,6 @@ public class Complex_Number {
     public Complex_Number scale(int k){
         return new Complex_Number(pRe/k,pIm/k);
     }
+
 
 }

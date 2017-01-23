@@ -99,7 +99,7 @@ public class Draw_Graph extends View {
         if(useFixedBounds){
             //For some reason max seems to be slightly above 2^14 = 16384
             if(isTimeDomain) {
-                maxY = 16384;
+                maxY = 2500;
             }else{
                 maxY = 500;
             }
@@ -122,6 +122,44 @@ public class Draw_Graph extends View {
         invalidate();
 
     }
+    public void updateGraph(double[] points, boolean useFixedBounds,boolean isTimeDomain, int xMin, int xMax){
+        double  maxY;
+        boolean firstPoint = true;
+        double[] selectedPoints = new double[xMax-xMin];
+        for(int i=xMin; i<xMax; i++){
+            selectedPoints[i-xMin] = points[i];
+        }
+
+        int numPoints = selectedPoints.length;
+        int xPointsArray[] = new int[numPoints];
+        int yPointsArray[] = new int[numPoints];
+
+        if(useFixedBounds){
+            //For some reason max seems to be slightly above 2^14 = 16384
+            if(isTimeDomain) {
+                maxY = 2500;
+            }else{
+                maxY = 500;
+            }
+        }else{
+            maxY = maxYInDataset(selectedPoints);
+        }
+
+        path.reset();
+        path.moveTo(0,0);
+
+        for(int i=0;i<numPoints;i++){
+            if(firstPoint){
+                path.moveTo((float)normalizeX(i,numPoints),(float)normalizeY(selectedPoints[i],maxY));
+                firstPoint = false;
+            }else {
+                path.lineTo((float)normalizeX(i,numPoints),(float)normalizeY(selectedPoints[i],maxY));
+            }
+        }
+
+        invalidate();
+
+    }
 
     //normalize the X values, given the number of points and knowing the total width.
     public double normalizeX(int x,int numPoints){
@@ -129,8 +167,6 @@ public class Draw_Graph extends View {
         portionOfTotal = (double) x / (double) numPoints;
         return portionOfTotal * this.wGraph;
     }
-
-
 
     //calculates the value of Y based on its value, the range of Y values, and the total height.
     public double normalizeY(double y, double maxY){
